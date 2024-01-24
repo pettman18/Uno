@@ -1,4 +1,4 @@
-set.seed(123)
+
 library(dplyr)
 library(data.table)
 
@@ -73,45 +73,46 @@ deal<- function(players,shuffled_deck){
 
 
 
-
+cards_req <- 1
   
 draw_cards <- function(active_deck,cards_req){
-  active_card <- as.data.frame( active_deck[c(1:cards_req),1])
-  active_deck <- as.data.frame(active_deck[c(cards_req+1:nrow(active_deck)-nrow(active_card)),1])
+  colnames(active_deck) <-"cards"
+  active_card <- as.data.frame( active_deck$cards[c(1:cards_req)])
+  active_deck <-as.data.frame( active_deck$cards[c(cards_req+1:(nrow(active_deck)-cards_req))])
+  colnames(active_deck) <-"cards"
+  output[[1]] <- active_card
+  output[[2]] <- active_deck
   
-  return(c(active_card,active_deck))
+  return(output)
   
 }
 
-# draw_cards(active_deck, 2)
+draw_cards(active_deck, 1)
 # draw_cards(active_deck, 3)
 # draw_cards(active_deck, 23)
-
-
-active_player <- 1
-next_player <- 2
-direction <- 1
-
-active_card <- draw_cards(active_deck, 1)[1]
-active_deck <- draw_cards(active_deck, 1)[2]
-
-active_deck <- unlist(active_deck)
-active_deck <- data.frame(active_deck)
-
-
-# assign cards to a player
-player_cards <- all_player_cards[1,2]
-player_cards <- as.data.frame(fread(gsub(",", "\n", player_cards, perl=TRUE), col.names = c("cards")))
-# player_cards <- as.data.frame(player_cards)
-colnames( player_cards) <- "cards"
-
+# 
+# 
+# active_player <- 1
+# next_player <- 2
+# direction <- 1
+# 
+# active_card <- draw_cards(active_deck, 1)[1]
+# active_deck <- draw_cards(active_deck, 1)[2]
+# 
+# active_deck <- unlist(active_deck)
+# active_deck <- data.frame(active_deck)
+# 
+# 
+# # assign cards to a player
+# player_cards <- all_player_cards[1,2]
+# player_cards <- as.data.frame(fread(gsub(",", "\n", player_cards, perl=TRUE), col.names = c("cards")))
+# # player_cards <- as.data.frame(player_cards)
+# colnames( player_cards) <- "cards"
+# 
 
 
 find_playable_cards <- function(player_cards, active_card){
   
-  
-  
-  # player_cards <- as.data.frame(fread(gsub(",", "\n", player_cards, perl=TRUE), col.names = c("cards")))
   
   colnames(player_cards) <- "cards"
   
@@ -141,37 +142,76 @@ find_playable_cards <- function(player_cards, active_card){
 }
 
 
+action <- "D"
+active_card <- "r6"
 
 
-
-play_card<- function(options,action){
+play_card<- function(options,action,active_card){
   
   outcome<- if(action=="N"){2}else{""}
   outcome<- if(action=="C"){1}else{outcome}
-  outcome<- if(action=="P"){"pick up"}else{outcome}
+  outcome<- if(action=="D"){"pick up"}else{outcome}
   outcome<- if(action=="W"){3}else{outcome}
   
   choice <- unlist(options[outcome])[1]
+  choice <-if(length(outcome)==0){active_card}else{choice}
 
   return(choice)
 }
 
 
 
-player_turn <- function(player_cards, active_card,action){
+player_turn <- function(player_cards, active_card,action,active_deck){
   
 options <- find_playable_cards(player_cards, active_card)
-active_card <- as.character(play_card(options,action)[1])
 
-player_cards <- player_cards[-match(active_card, player_cards$cards),]
+# # if we have no options we should pick up
+# if(length(options[lengths(options) > 0])==0)
+
+if(action=="D"){
+new_card <- as.data.frame(draw_cards(active_deck, 1)[[1]])
+colnames(new_card)<-"cards"
+print(paste0("picked up a new cards: ",new_card))
+active_deck <- draw_cards(active_deck, 1)[[2]]
+player_cards <-rbind.data.frame(player_cards,new_card)
+print(paste0("here are my cards ",player_cards))
+options <- find_playable_cards(player_cards, active_card)
+action <- readline("Enter: C for the same colour, N for same number, W for Wild, S for skip  ")
+action <- toupper(action)
+}
+
+if(action=="S"){active_card <- active_card}else{
+# play a card
+active_card <- as.character(play_card(options,action,active_card)[1])
+}
+
+
+# colnames(active_card) <- "cards"
+if(action=="S"|action=="D"){player_cards <- player_cards}else{
+
+
+    #####heres the problem
+# player_cards$cards <- player_cards[-match(active_card, player_cards$cards),1]
+player_cards <- player_cards[-which(player_cards$cards==active_card)[1],]
 player_cards <- as.data.frame(player_cards)
 colnames(player_cards) <- "cards"
+}
 
-output <- list(active_card,player_cards)
+output <- list(active_card,player_cards,active_deck)
 
 return(output)
 
 }
+
+user_input<- function(){
+action <- readline("Enter: C for the same colour, N for same number, W for Wild, D for Draw   ")
+action <- toupper(action)
+
+return(action)
+}
+# game starts here
+
+set.seed(123)
 
 deck <-full_deck()
 shuffled_deck <- shuffle(deck)
@@ -189,11 +229,8 @@ active_player <- 1
 next_player <- 2
 direction <- 1
 
-active_card <- draw_cards(active_deck, 1)[1]
-active_deck <- draw_cards(active_deck, 1)[2]
-
-active_deck <- unlist(active_deck)
-active_deck <- data.frame(active_deck)
+active_card <- draw_cards(active_deck, 1)[[1]]
+active_deck <- draw_cards(active_deck, 1)[[2]]
 
 
 # assign cards to a player
@@ -210,10 +247,13 @@ x<-1
 while(x<3){
 print(active_card)
 print(player_cards)
-action <- readline("Enter: C for the same colour, N for same number or W for Wild   ")
-action <- toupper(action)
-active_card <- player_turn(player_cards,active_card,action )[[1]]
-player_cards <- player_turn(player_cards,active_card, action)[[2]]
+
+user_input()
+turn_cards <- player_turn(player_cards,active_card,action,active_deck )
+
+active_card <- turn_cards[[1]]
+player_cards <- turn_cards[[2]]
+active_deck <- turn_cards[[3]]
 
 x<-x+1
 }
