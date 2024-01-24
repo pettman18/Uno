@@ -185,7 +185,7 @@ find_next_player<-function(active_player,players,direction,skip=FALSE){
   return(next_player)
 }
 
-find_next_player(1,6,-1,)
+find_next_player(1,6,-1,T)
 
 
 source("uno_setup.R")
