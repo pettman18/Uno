@@ -23,7 +23,8 @@ game_cards <- rbind.data.frame(player1_cards,player2_cards,player3_cards)
 x<-1
 while(x< 12){
 
-  
+
+
 skip_state <- FALSE
 start_points<-find_points(game_cards,as.numeric(active_player))  
 
@@ -72,6 +73,28 @@ end_points <- find_points(game_cards,active_player)
 
 feedback <- start_points[2]-end_points[2]
 print(feedback)
+
+turn_options <- turn_cards[[9]]
+turn_action <- turn_cards[[10]]
+
+if(active_player==1& x>players){
+
+data <- as.data.frame(read_csv("data.csv",show_col_types = FALSE))  
+
+training_data<-ai_turn_learn(turn_action, turn_options, player_cards,active_player, x,feedback) 
+training_data <-  as.data.frame(training_data)
+
+
+training_data <- cbind(training_data, data$state_number,data$state_colour,data$state_wild,data$state_win)
+
+filename <- paste0(x,"traineddata.csv")
+write.csv(training_data, filename, row.names = FALSE)
+
+}
+
+# Create an empty data frame with specified columns
+
+
  
 active_player <- find_next_player(active_player,players,1,skip_state)
 

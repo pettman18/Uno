@@ -2,6 +2,11 @@
 
 library(dplyr)
 library(data.table)
+# Load necessary library
+library(tibble)
+library(readr)
+
+
 
 deckmaker <- function(colour){
   initial <- substr(colour,1,1)
@@ -44,6 +49,7 @@ is_non_empty_recursive <- function(x) {
     return(length(x) > 0)
   }
 }
+
 
 
 deal<- function(players,shuffled_deck){
@@ -262,7 +268,7 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
   
   active_card<-if(length(w_colour)!=0){w_colour}else{active_card}
   
-  output <- list(active_card,player_cards,active_deck,card_played,draw_amount,direction,skip_state,w_colour)
+  output <- list(active_card,player_cards,active_deck,card_played,draw_amount,direction,skip_state,w_colour,options,action)
   
   return(output)
   
@@ -325,7 +331,7 @@ list <- deal(players,shuffled_deck)
 
 
 all_player_cards <- as.data.frame(list[1:2])
-active_deck <- list[3:length(list)]
+active_deck <- list[3:length(list)] 
 active_deck <- as.data.frame(do.call(rbind,active_deck))
 colnames(active_deck) <-"cards"
 
@@ -378,3 +384,36 @@ return(game_points)
 
 
 player <- 1
+
+
+
+
+ai_turn_learn <- function(turn_action, turn_options, player_cards,active_player,x,feedback) {
+  
+  action_colour <- gsub("C",1,turn_action)
+  action_number <- gsub("N",2,turn_action)
+  action_wild <- gsub("W",3,turn_action)
+  
+  
+  state_number <- is_non_empty_recursive(turn_options[[1]])
+  state_colour <- is_non_empty_recursive(turn_options[[2]])
+  state_wild <- is_non_empty_recursive(turn_options[[3]])
+  state_win <-length(player_cards)<1
+  
+  training_data <- tibble(
+    active_player,
+    x,
+    state_number,
+    state_colour,
+    state_wild,
+    state_win,
+    turn_action,
+    feedback
+  )
+  
+  # Write the data frame to a CSV file
+  write.csv(training_data, "data.csv", row.names = FALSE)
+  
+  return(training_data)
+  
+}
