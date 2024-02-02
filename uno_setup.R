@@ -27,6 +27,8 @@ full_deck <- function(){
   yellow <- deckmaker("yellow")
   
   deck <- c(green,red,blue,yellow )
+  deck <- c(deck,deck)
+  # deck <- c(deck,deck,deck,deck,deck,deck,deck,deck,deck,deck,deck,deck,deck,deck,deck) 
   length(deck)
   return(deck)
 }
@@ -54,7 +56,9 @@ is_non_empty_recursive <- function(x) {
 
 deal<- function(players,shuffled_deck){
   
-  cards_req <- players * 7 
+  cards_req <- players * 7
+  
+  # cards_req <- players * 30
   player_cards <- ""
   all_player_cards <-data.frame("player"=character(),
                                 "cards"=character(), 
@@ -143,17 +147,99 @@ play_card<- function(options,action,active_card){
 }
 
 
+# Function to check if an element is empty
+is_empty <- function(x) {
+  return(length(unlist(x)) == 0)
+}
 
-player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colour=NULL){
+player <- 1
+
+auto_play <- function(options, active_player, model) {
+  # Initialize a dataframe to store the results
+  result_df <- data.frame(Element = integer(0), Status = character(0), stringsAsFactors = FALSE)
+  i <-1
+  # Checking each of the first three elements
+  for (i in 1:3) {
+    status <- if (is_empty(options[[i]])) "FALSE" else "TRUE"
+    result_df <- rbind(result_df, data.frame(Element = i, Status = status))
+    
+    
+  }
   
+  
+  
+  if(active_player==1){
+    print("ai")
+  model_lookup <- paste0(result_df$Status,collapse = "")
+  
+  model_example <- model[2]
+  model_example <-data.frame(model_example)
+  colnames(model_example) <- c("1","2","3","4")
+  model_example <- subset(model_example,row.names(model_example) %in% model_lookup )
+  
+  
+  # Find the maximum value in the dataframe
+  max_value <- max(model_example, na.rm = TRUE)
+  
+  # Find the column index of the maximum value
+  max_column_index <- which(model_example == max_value, arr.ind = TRUE)[, "col"]
+  
+  choice <- max_column_index
+  # print(choice)
+  }else{
+    print("random")
+  result_df <- filter(result_df,result_df$Status=="TRUE")
+  choice <- as.character(sample_n(result_df,1))[1]
+  # print(choice)
+  
+  }
+  choice<- gsub("1","C",choice)
+  choice<- gsub("2","N",choice)
+  choice<- gsub("3","W",choice)
+  
+  return(choice)
+}
+
+
+
+
+
+player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colour=NULL,active_player,model){
+  win <- FALSE
   cards_start_turn <- nrow(player_cards)
   options <- find_playable_cards(player_cards, active_card)
+  
+  w_pref <- names(which.max(table(substr(player_cards$cards,1,1))))
+  
+  # if the player only has one choice, lets make it.  
+  # 
+  # if (any(sapply(options, is_non_empty_recursive))) {
+  #   action <-user_input()  
+  # } else {
+  #   action <- "D"
+  # }
+  
+  
+  
+  # if the options are empty we must set action as D
+  # 
   
   if(draw_amount==0){
     
     
+    # Apply the function to each top-level element of the list and check if any are true
+    if (any(sapply(options, is_non_empty_recursive))) {
+      
+      
+      action <- auto_play(options, active_player, model)
+      
+      
+      # action <-user_input()  
+    } else {
+      action <- "D"
+    }
     
-    action <-user_input()  
+    
     
     if(action=="D"){
       new_card <- as.data.frame(draw_cards(active_deck, 1)[[1]])
@@ -167,7 +253,9 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
       
       # Apply the function to each top-level element of the list and check if any are true
       if (any(sapply(options, is_non_empty_recursive))) {
-        action <-user_picked_up()
+        action <- auto_play(options, active_player, model)
+        
+        # action <-user_picked_up()
       } else {
         action <- "S"
       }
@@ -179,13 +267,20 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
     # if we skip then active card remains the same, otherwise play the card
     if(action=="S"){active_card <- active_card}else{
       
+      
+      
+      # I dont think we've set the action
+      
+      
+      
       active_card <- as.character(play_card(options,action,active_card)[1])
     }
   }else{
     # Draw amount >0 stuff lives here
-    if(substr(active_card,2,2)=="P" && length(options[[2]]) > 0 && options[[2]] != ""){
+    # if(substr(active_card,2,2)=="P" && length(options[[2]]) > 0 && options[[2]] != ""){
+    if(substr(active_card,2,2)=="P" && length(options[[2]]) > 0 ){
       # if the card is Plus two and we have plus 2 then we play.
-      action <-user_input()
+      action <-"N"
       active_card <- as.character(play_card(options,action,active_card)[1])
       
     }else{
@@ -215,8 +310,7 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
       colnames(player_cards) <- "cards"
     }else{
       print("Win")
-      break
-      
+      win <- TRUE
     }
   }
   
@@ -236,7 +330,9 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
   }else{
     
     
-    # if w4 then add 4 to pickup, colour bevaiour handled below
+    print(active_card)
+    
+    # if w4 then add 4 to pickup, colour behavior handled below
     if(active_card=="W4"){
       draw_amount<-4
       
@@ -245,7 +341,8 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
     
     if(substr(active_card,1,1)=="W"){
       
-      w_colour <-pick_colour()
+      # w_colour <-pick_colour()
+      w_colour <- w_pref
       
     }else{w_colour <-NULL}
     
@@ -268,11 +365,15 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
   
   active_card<-if(length(w_colour)!=0){w_colour}else{active_card}
   
-  output <- list(active_card,player_cards,active_deck,card_played,draw_amount,direction,skip_state,w_colour,options,action)
+  output <- list(active_card,player_cards,active_deck,card_played,draw_amount,direction,skip_state,w_colour,options,action,win)
   
   return(output)
   
 }
+
+
+
+
 
 user_input<- function(){
   action <- readline("Enter: C for the same colour, N for same number, W for Wild, D for Draw   ")
@@ -280,6 +381,10 @@ user_input<- function(){
   
   return(action)
 }
+
+
+
+
 
 user_picked_up<- function(){
   action <- readline("Enter: C for the same colour, N for same number, W for Wild, S for skip   ")
@@ -289,12 +394,19 @@ user_picked_up<- function(){
 }
 
 
+
+
+
+
 pick_colour<- function(){
   w_colour <- readline("Pick Colour: R, B, Y, G   ")
   w_colour <- tolower(w_colour)
   
   return(w_colour)
 }
+
+
+
 
 
 load_player<- function(active_player,all_player_cards){
@@ -307,6 +419,10 @@ load_player<- function(active_player,all_player_cards){
   return(player_cards)
 }
 
+
+
+
+
 find_next_player<-function(active_player,players,direction,skip=FALSE){
   
   moves <-if(skip==TRUE){2}else{1}
@@ -316,12 +432,14 @@ find_next_player<-function(active_player,players,direction,skip=FALSE){
   return(next_player)
 }
 
+
+
 # find_next_player(3,6,-1,F)
 
 # uno_setup
 
 # setup
-set.seed(126)
+# set.seed(126)
 
 deck <-full_deck()
 shuffled_deck <- shuffle(deck)
@@ -352,6 +470,8 @@ game_players<-0
 
 
 game_players <-load_player(active_player,all_player_cards)
+
+
 
 find_points <- function(game_cards=game_cards,player){
   
@@ -390,10 +510,10 @@ player <- 1
 
 ai_turn_learn <- function(turn_action, turn_options, player_cards,active_player,x,feedback) {
   
-  action_colour <- gsub("C",1,turn_action)
-  action_number <- gsub("N",2,turn_action)
-  action_wild <- gsub("W",3,turn_action)
-  
+  turn_action <- gsub("C",1,turn_action)
+  turn_action <- gsub("N",2,turn_action)
+  turn_action <- gsub("W",3,turn_action)
+  turn_action <- gsub("S",4,turn_action)
   
   state_number <- is_non_empty_recursive(turn_options[[1]])
   state_colour <- is_non_empty_recursive(turn_options[[2]])

@@ -1,61 +1,31 @@
-
-# 
-# get the state of the game
-# 
-# get the state of the game, action, reward, next state, done ( game over)
+library(dplyr)
 
 
-train_long_memory
+setwd("archive")
+training_files <- list.files(,".csv")
 
-train_short_memory
+long_term_memory<- read.csv(training_files[1])
 
-remember <- function( to write a state_old, action, reward,state_new,done) into a csv
+v<-2
+while(v < length(training_files)){
+        
+        long_term_memory <- rbind(read.csv(training_files[v]),long_term_memory)
+        
+        
+        v<- v+1
+}
 
+print(long_term_memory)
 
-get_action ( we should be able to use options and play card)
-
-
-max_memory <- 100000
-batch_size <- 1000
-LR <- 0.001
-
-n_games <- 0
-epsilon <- 0
-gamma <- 0 # discount rate
-# memory <- 
-# model
-# trainer
-
-
-plot_scores <- 0
-plot_mean_scores<- 0
-total_score <- 0
-record <- 0
+long_term_memory <- sapply(long_term_memory,as.character)
+long_term_memory <- data.frame(long_term_memory)
+long_term_memory$points <- as.numeric(long_term_memory$points)
+long_term_memory <- subset(long_term_memory, select = -c(state_win,data.state_win) )
+long_term_memory$state <-as.character(paste0(long_term_memory$state_number,long_term_memory$state_colour,long_term_memory$state_wild))
+long_term_memory$new_state <-as.character(paste0(long_term_memory$data.state_number,long_term_memory$data.state_colour,long_term_memory$data.state_wild))
+long_term_memory <- long_term_memory %>% filter(,is.na(long_term_memory$points)==FALSE)
 
 
 
-while n_game < total_games
-
- get the state of the game
- 
- get the move played
- 
- perform the move
- 
-(reward,done,score)
-
-get the new state
-
-# train short memory
-train_short_memory(state_old, final_move,reward, state_new)
-
-remember(state_old, final_move,reward, state_new)
-
-if the game is over, lets traing the long memory
-n_games <- n_games + 1
-train_long_memory(state_old, final_move,reward, state_new)
-
-print(n_game)
-print(winner)
-
+setwd("~/GitHub/Uno")
 

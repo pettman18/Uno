@@ -1,2 +1,2 @@
 "active_player","x","state_number","state_colour","state_wild","state_win","turn_action","points"
-1,11,TRUE,TRUE,FALSE,FALSE,"C",2
+1,1e+07,TRUE,FALSE,FALSE,FALSE,"1",1000

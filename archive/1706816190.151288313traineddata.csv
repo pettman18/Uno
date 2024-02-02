@@ -1,0 +1,2 @@
+"active_player","x","state_number","state_colour","state_wild","state_win","turn_action","points","data$state_number","data$state_colour","data$state_wild","data$state_win"
+1,13,FALSE,FALSE,FALSE,FALSE,"4",-42,FALSE,TRUE,FALSE,FALSE
