@@ -9,3 +9,5 @@ mysyn <- syn(my_data)
 summary(mysyn)
 
 compare(mysyn, my_data, stat = "counts")
+
+
