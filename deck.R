@@ -5,11 +5,11 @@ start <- Sys.time()
 
 training_loop <- 1
 
-while (training_loop < 1000){
+while (training_loop < 2000){
 
 source("uno_setup.R")
 
-if(training_loop%%10==0){ 
+if(training_loop%%100==0){ 
   print("training")
 source("agent.R")
 source("model trainer.R")

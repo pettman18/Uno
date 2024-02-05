@@ -1,7 +1,7 @@
 library(ReinforcementLearning)
 
 
-control <- list(alpha = 0.2, gamma = 0.1, epsilon = 0.1)
+control <- list(alpha = 0.6, gamma = 0.15, epsilon = 0.1)
 
 model <- ReinforcementLearning(data = long_term_memory, 
                                s = "state", 

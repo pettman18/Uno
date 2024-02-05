@@ -10,4 +10,5 @@ summary(mysyn)
 
 compare(mysyn, my_data, stat = "counts")
 
+long_term_memory
 
