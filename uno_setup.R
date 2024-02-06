@@ -168,7 +168,7 @@ auto_play <- function(options, active_player, model) {
   
   
   
-  if(active_player==1){
+  if(active_player==7){
     print("ai")
   model_lookup <- paste0(result_df$Status,collapse = "")
   
@@ -187,7 +187,7 @@ auto_play <- function(options, active_player, model) {
   choice <- max_column_index
   # print(choice)
   }else{
-    print("random")
+    # print("random")
   result_df <- filter(result_df,result_df$Status=="TRUE")
   choice <- as.character(sample_n(result_df,1))[1]
   # print(choice)
@@ -210,6 +210,17 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
   options <- find_playable_cards(player_cards, active_card)
   
   w_pref <- names(which.max(table(substr(player_cards$cards,1,1))))
+  
+  # Adding extra states here
+  
+  
+  n_y <- min(sum(substr(player_cards$cards,1,1)=="y"),7)
+  n_g <- min(sum(substr(player_cards$cards,1,1)=="g"),7)
+  n_b <- min(sum(substr(player_cards$cards,1,1)=="b"),7)
+  n_r <- min(sum(substr(player_cards$cards,1,1)=="r"),7)
+  n_w <- min(sum(substr(player_cards$cards,1,1)=="w"),7)
+  hand_state <- paste(n_b,n_g,n_r,n_y, n_w, sep = "")
+  
   
   # if the player only has one choice, lets make it.  
   # 
@@ -244,10 +255,10 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
     if(action=="D"){
       new_card <- as.data.frame(draw_cards(active_deck, 1)[[1]])
       colnames(new_card)<-"cards"
-      print(paste0("picked up a new cards: ",new_card))
+      # print(paste0("picked up a new cards: ",new_card))
       active_deck <- draw_cards(active_deck, 1)[[2]]
       player_cards <-rbind.data.frame(player_cards,new_card)
-      print(paste0("here are my cards ",player_cards))
+      # print(paste0("here are my cards ",player_cards))
       options <- find_playable_cards(player_cards, active_card)
       
       
@@ -287,11 +298,11 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
       # Draw some cards as punishment 
       new_card <- as.data.frame(draw_cards(active_deck, draw_amount)[[1]])
       colnames(new_card)<-"cards"
-      print(paste0("picked up a new cards: ",new_card))
+      # print(paste0("picked up a new cards: ",new_card))
       active_deck <- draw_cards(active_deck, draw_amount)[[2]]
       player_cards <-rbind.data.frame(player_cards,new_card)
-      print("all my new cards are now here")
-      print(player_cards)
+      # print("all my new cards are now here")
+      # print(player_cards)
       # make sure we dont play a card now
       action <- "S"
     }
@@ -324,13 +335,13 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
   
   if(card_played==FALSE){
     
-    print("no card played")
+    # print("no card played")
     
     
   }else{
     
     
-    print(active_card)
+    # print(active_card)
     
     # if w4 then add 4 to pickup, colour behavior handled below
     if(active_card=="W4"){
@@ -349,12 +360,12 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
     
     if(substr(active_card,2,2)=="R"){
       direction<- direction*-1
-      print(direction)
+      # print(direction)
     }else{direction}
     
     if(substr(active_card,2,2)=="P"){
       draw_amount <- draw_amount +2
-      print(draw_amount)
+      # print(draw_amount)
     }else{draw_amount <-draw_amount}
     skip_state <- if(substr(active_card,2,2)=="S"){
       TRUE
@@ -362,6 +373,10 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
     
     
   }
+  
+  # adding hand state to the output
+  options[[4]]<- hand_state
+  
   
   active_card<-if(length(w_colour)!=0){w_colour}else{active_card}
   
@@ -518,6 +533,7 @@ ai_turn_learn <- function(turn_action, turn_options, player_cards,active_player,
   state_number <- is_non_empty_recursive(turn_options[[1]])
   state_colour <- is_non_empty_recursive(turn_options[[2]])
   state_wild <- is_non_empty_recursive(turn_options[[3]])
+  hand_state <- turn_options[[4]]
   state_win <-length(player_cards)<1
   
   training_data <- tibble(
@@ -527,6 +543,7 @@ ai_turn_learn <- function(turn_action, turn_options, player_cards,active_player,
     state_colour,
     state_wild,
     state_win,
+    hand_state,
     turn_action,
     feedback
   )

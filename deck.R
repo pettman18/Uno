@@ -9,11 +9,11 @@ while (training_loop < 2000){
 
 source("uno_setup.R")
 
-if(training_loop%%100==0){ 
-  print("training")
-source("agent.R")
-source("model trainer.R")
-}
+# if(training_loop%%100==0){ 
+#   print("training")
+# source("agent.R")
+# source("model trainer.R")
+# }
   
 players <- 3
 
@@ -46,8 +46,8 @@ player_cards <- filter(game_cards,game_cards$player==active_player)[2]
 game_cards <- filter(game_cards,game_cards$player!=active_player)
 
 
-print(active_card)
-print(player_cards)
+# print(active_card)
+# print(player_cards)
 
                 
 turn_cards <- player_turn(player_cards,active_card,active_deck,draw_amount,NULL,active_player,model )
@@ -92,7 +92,7 @@ win <- turn_cards[[11]]
 
 
 feedback <- start_points[2]-end_points[2]
-print(feedback)
+# print(feedback)
 
 
 
@@ -126,7 +126,7 @@ training_data<-ai_turn_learn(turn_action, turn_options, player_cards,active_play
 training_data <-  as.data.frame(training_data)
 
 
-training_data <- cbind(training_data, data$state_number,data$state_colour,data$state_wild,data$state_win)
+training_data <- cbind(data$state_number,data$state_colour,data$state_wild,data$state_win,data$hand_state,training_data)
 
 filename <- paste0(as.numeric(Sys.time()),training_loop,x,"traineddata.csv")
 setwd("archive")
