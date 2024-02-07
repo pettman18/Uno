@@ -5,7 +5,7 @@ start <- Sys.time()
 
 training_loop <- 1
 
-while (training_loop < 20000){
+while (training_loop < 2){
 
 source("uno_setup.R")
 

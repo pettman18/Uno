@@ -154,7 +154,7 @@ is_empty <- function(x) {
 
 player <- 1
 
-auto_play <- function(options, active_player, model) {
+auto_play <- function(options, active_player, model, hand_state="") {
   # Initialize a dataframe to store the results
   result_df <- data.frame(Element = integer(0), Status = character(0), stringsAsFactors = FALSE)
   i <-1
@@ -168,16 +168,21 @@ auto_play <- function(options, active_player, model) {
   
   
   
-  if(active_player==7){
+  if(active_player==1){
     print("ai")
   model_lookup <- paste0(result_df$Status,collapse = "")
-  
+  model_lookup <- paste0(model_lookup,hand_state,sep="")
   model_example <- model[2]
   model_example <-data.frame(model_example)
   colnames(model_example) <- c("1","2","3","4")
   model_example <- subset(model_example,row.names(model_example) %in% model_lookup )
   
-  
+  # if we dont have a modeled case then we need to chose a random valid value
+  if(nrow(model_example)==0){    # print("random")
+    result_df <- filter(result_df,result_df$Status=="TRUE")
+    choice <- as.character(sample_n(result_df,1))[1]
+    # print(choice)
+    }else{
   # Find the maximum value in the dataframe
   max_value <- max(model_example, na.rm = TRUE)
   
@@ -186,6 +191,7 @@ auto_play <- function(options, active_player, model) {
   
   choice <- max_column_index
   # print(choice)
+    }
   }else{
     # print("random")
   result_df <- filter(result_df,result_df$Status=="TRUE")
@@ -242,7 +248,7 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
     if (any(sapply(options, is_non_empty_recursive))) {
       
       
-      action <- auto_play(options, active_player, model)
+      action <- auto_play(options, active_player, model,hand_state)
       
       
       # action <-user_input()  
@@ -264,7 +270,7 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
       
       # Apply the function to each top-level element of the list and check if any are true
       if (any(sapply(options, is_non_empty_recursive))) {
-        action <- auto_play(options, active_player, model)
+        action <- auto_play(options, active_player, model,hand_state)
         
         # action <-user_picked_up()
       } else {
