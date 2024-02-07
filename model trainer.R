@@ -18,3 +18,6 @@ summary(model)
 # model_old <- model
 # new_model <-  model
 str(long_term_memory)
+
+
+save(model,file =  "model.Rdata")
