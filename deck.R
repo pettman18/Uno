@@ -5,7 +5,7 @@ start <- Sys.time()
 
 training_loop <- 1
 
-while (training_loop < 2000){
+while (training_loop < 10){
 
 source("uno_setup.R")
 
@@ -100,8 +100,8 @@ if(win==TRUE){
   
   x<-10000000
   feedback <- feedback + 1000
-  print(feedback)
-  print(paste0("winner is ", active_player))
+  # print(feedback)
+  # print(paste0("winner is ", active_player))
   
   # Writing to a CSV file
   write.table(
@@ -141,7 +141,7 @@ active_player <- find_next_player(active_player,players,1,skip_state)
 x<-x+1
 }
 
-
+print(training_loop)
 
 training_loop <- training_loop + 1
 }

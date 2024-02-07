@@ -213,13 +213,13 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
   
   # Adding extra states here
   
-  
-  n_y <- min(sum(substr(player_cards$cards,1,1)=="y"),7)
-  n_g <- min(sum(substr(player_cards$cards,1,1)=="g"),7)
-  n_b <- min(sum(substr(player_cards$cards,1,1)=="b"),7)
-  n_r <- min(sum(substr(player_cards$cards,1,1)=="r"),7)
-  n_w <- min(sum(substr(player_cards$cards,1,1)=="w"),7)
-  hand_state <- paste(n_b,n_g,n_r,n_y, n_w, sep = "")
+  active_colour<- substr(active_card,1,1)
+  n_y <- min(sum(substr(player_cards$cards,1,1)=="y"),5)
+  n_g <- min(sum(substr(player_cards$cards,1,1)=="g"),5)
+  n_b <- min(sum(substr(player_cards$cards,1,1)=="b"),5)
+  n_r <- min(sum(substr(player_cards$cards,1,1)=="r"),5)
+  n_w <- min(sum(substr(player_cards$cards,1,1)=="w"),5)
+  hand_state <- paste(active_colour,n_b,n_g,n_r,n_y, n_w, sep = "")
   
   
   # if the player only has one choice, lets make it.  
