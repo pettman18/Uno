@@ -1,4 +1,5 @@
-
+setwd("~/GitHub/Uno")
+source("graph.R")
 
 start <- Sys.time()
 # training loop
@@ -126,7 +127,7 @@ training_data<-ai_turn_learn(turn_action, turn_options, player_cards,active_play
 training_data <-  as.data.frame(training_data)
 
 
-training_data <- cbind(data$state_number,data$state_colour,data$state_wild,data$state_win,data$hand_state,training_data)
+training_data <- cbind(data$state_number,data$state_colour,data$state_wild,data$state_win,data$hand_state,data$turn_action ,training_data)
 
 filename <- paste0(as.numeric(Sys.time()),training_loop,x,"traineddata.csv")
 setwd("archive")
@@ -142,6 +143,7 @@ x<-x+1
 }
 
 print(training_loop)
+graph_it()
 
 training_loop <- training_loop + 1
 }

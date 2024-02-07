@@ -1,4 +1,4 @@
-
+setwd("~/GitHub/Uno")
 
 library(dplyr)
 library(data.table)
@@ -168,7 +168,7 @@ auto_play <- function(options, active_player, model, hand_state="") {
   
   
   
-  if(active_player==1){
+  if(active_player==7){
     print("ai")
   model_lookup <- paste0(result_df$Status,collapse = "")
   model_lookup <- paste0(model_lookup,hand_state,sep="")

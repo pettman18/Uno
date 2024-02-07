@@ -1,9 +1,9 @@
 library(ReinforcementLearning)
 
 
-control <- list(alpha = 0.6, gamma = 0.15, epsilon = 0.1)
+control <- list(alpha = 0.1, gamma = 0.15, epsilon = 0.05)
 
-model_new <- ReinforcementLearning(data = long_term_memory, 
+model <- ReinforcementLearning(data = long_term_memory, 
                                s = "state", 
                                a = "turn_action", 
                                r = "points", 
@@ -12,16 +12,12 @@ model_new <- ReinforcementLearning(data = long_term_memory,
                                control = control
                                )
 
-summary(model_new)
+summary(model)
 
 
 # model_old <- model
 # new_model <-  model
 str(long_term_memory)
 
-
+ # model<- model_new
 save(model,file =  "model.Rdata")
-
-long_term_memory <- long_term_memory[ -(long_term_memory$data.state_wild==FALSE & long_term_memory$turn_action==3  ) ,  ]
-long_term_memory <- long_term_memory[ -(long_term_memory$data.state_number==FALSE & long_term_memory$turn_action==2  ) ,  ]
-long_term_memory <- long_term_memory[ -(long_term_memory$data.state_colour==FALSE & long_term_memory$turn_action==1  ) ,  ]
