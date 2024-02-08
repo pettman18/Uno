@@ -1,2 +1,2 @@
-"active_player","x","state_number","state_colour","state_wild","state_win","hand_state","turn_action","points"
-1,4,TRUE,TRUE,FALSE,FALSE,"b21110","2",8
+"active_player","x","state_colour","state_number","state_wild","state_win","hand_state","turn_action","points"
+1,1e+07,FALSE,TRUE,FALSE,FALSE,"y01000","2",1000

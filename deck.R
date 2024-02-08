@@ -6,15 +6,16 @@ start <- Sys.time()
 
 training_loop <- 1
 
-while (training_loop < 2){
+while (training_loop < 50){
 
 source("uno_setup.R")
 
-# if(training_loop%%100==0){ 
-#   print("training")
-# source("agent.R")
-# source("model trainer.R")
-# }
+if(training_loop%%50==0){ 
+   print("training")
+ # source("agent.R")
+ # source("model trainer.R")
+source("model update.R")
+ }
   
 players <- 3
 
@@ -27,7 +28,6 @@ player3_cards <-load_player(3,all_player_cards)
 player1_cards <- cbind(player=1,player1_cards)
 player2_cards <- cbind(player=2,player2_cards)
 player3_cards <- cbind(player=3,player3_cards)
-
 
 game_cards <- rbind.data.frame(player1_cards,player2_cards,player3_cards)
 
@@ -127,7 +127,7 @@ training_data<-ai_turn_learn(turn_action, turn_options, player_cards,active_play
 training_data <-  as.data.frame(training_data)
 
 
-training_data <- cbind(data$state_number,data$state_colour,data$state_wild,data$state_win,data$hand_state,data$turn_action ,training_data)
+training_data <- cbind(data$state_colour,data$state_number,data$state_wild,data$state_win,data$hand_state,data$turn_action,data$points ,training_data)
 
 filename <- paste0(as.numeric(Sys.time()),training_loop,x,"traineddata.csv")
 setwd("archive")
@@ -142,8 +142,8 @@ active_player <- find_next_player(active_player,players,1,skip_state)
 x<-x+1
 }
 
-print(training_loop)
-graph_it()
+# print(training_loop)
+print(graph_it())
 
 training_loop <- training_loop + 1
 }

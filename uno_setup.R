@@ -1,5 +1,5 @@
 setwd("~/GitHub/Uno")
-
+# set.seed(123)
 library(dplyr)
 library(data.table)
 # Load necessary library
@@ -168,8 +168,8 @@ auto_play <- function(options, active_player, model, hand_state="") {
   
   
   
-  if(active_player==7){
-    print("ai")
+  if(active_player==1){
+    # print("ai")
   model_lookup <- paste0(result_df$Status,collapse = "")
   model_lookup <- paste0(model_lookup,hand_state,sep="")
   model_example <- model[2]
@@ -184,12 +184,16 @@ auto_play <- function(options, active_player, model, hand_state="") {
     # print(choice)
     }else{
   # Find the maximum value in the dataframe
+  eligible_ai_options <- result_df[result_df$Status==TRUE,][1]
+  model_example <- model_example %>% select(unlist(eligible_ai_options$Element))
+  
   max_value <- max(model_example, na.rm = TRUE)
   
-  # Find the column index of the maximum value
-  max_column_index <- which(model_example == max_value, arr.ind = TRUE)[, "col"]
-  
-  choice <- max_column_index
+  choice <-colnames(model_example)[apply(model_example,1,which.max)]
+  # # Find the column index of the maximum value
+  # max_column_index <- which(model_example == max_value, arr.ind = TRUE)[, "col"]
+  # 
+  # choice <- max_column_index
   # print(choice)
     }
   }else{
@@ -326,7 +330,7 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
       player_cards <- as.data.frame(player_cards)
       colnames(player_cards) <- "cards"
     }else{
-      print("Win")
+      # print("Win")
       win <- TRUE
     }
   }
@@ -536,8 +540,8 @@ ai_turn_learn <- function(turn_action, turn_options, player_cards,active_player,
   turn_action <- gsub("W",3,turn_action)
   turn_action <- gsub("S",4,turn_action)
   
-  state_number <- is_non_empty_recursive(turn_options[[1]])
-  state_colour <- is_non_empty_recursive(turn_options[[2]])
+  state_colour <- is_non_empty_recursive(turn_options[[1]])
+  state_number <- is_non_empty_recursive(turn_options[[2]])
   state_wild <- is_non_empty_recursive(turn_options[[3]])
   hand_state <- turn_options[[4]]
   state_win <-length(player_cards)<1
@@ -545,8 +549,8 @@ ai_turn_learn <- function(turn_action, turn_options, player_cards,active_player,
   training_data <- tibble(
     active_player,
     x,
-    state_number,
     state_colour,
+    state_number,
     state_wild,
     state_win,
     hand_state,

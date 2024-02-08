@@ -1,6 +1,6 @@
 # Data binder
 
-setwd("E:/Uno archive/archive")
+setwd("archive")
 
 training_files <- list.files(,".csv")
 
@@ -22,9 +22,9 @@ while(v < (x*5000)){
 }
 
 
-setwd("E:/Uno archive")
+setwd("~/GitHub/Uno")
 write.csv(long_term_memory,paste0(x,"longtermdata.csv",sep=""))
-setwd("E:/Uno archive/archive")
+setwd("archive")
 
 x<-x+1
 }
