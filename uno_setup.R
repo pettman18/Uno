@@ -1,4 +1,5 @@
-setwd("~/GitHub/Uno")
+# setwd("~/GitHub/Uno")
+setwd("E:/Github/Uno")
 # set.seed(123)
 library(dplyr)
 library(data.table)
@@ -551,7 +552,7 @@ card_points <- gsub("P2","25",card_points)
 card_points <- gsub("P","25",card_points)
 
 card_points <- gsub("W4","50",card_points)
-card_points <- gsub("w","50",card_points)
+card_points <- gsub("W","50",card_points)
 
 game_points <-cbind.data.frame(game_cards,"card_points" = as.numeric(card_points)) 
 
@@ -597,9 +598,9 @@ ai_turn_learn <- function(turn_action, turn_options, player_cards,active_player,
     turn_action,
     feedback
   )
-  
+   
   # Write the data frame to a CSV file
-  write.csv(training_data, "data.csv", row.names = FALSE)
+  # write.csv(training_data, "data.csv", row.names = FALSE)
   
   return(training_data)
   

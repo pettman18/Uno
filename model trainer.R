@@ -2,7 +2,8 @@ library(ReinforcementLearning)
 library(dplyr)
 
 gc()
-setwd("~/GitHub/Uno")
+# setwd("~/GitHub/Uno")
+setwd("E:/Github/Uno")
 
 setwd("archive")
 

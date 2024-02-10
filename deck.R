@@ -1,12 +1,13 @@
-setwd("~/GitHub/Uno")
+setwd("E:/Github/Uno")
 source("graph.R")
 
 start <- Sys.time()
 # training loop
 
 training_loop <- 1
+runs <- 100
 
-while (training_loop < 1000){
+while (training_loop < runs){
 
 source("uno_setup.R")
 
@@ -131,14 +132,15 @@ if(win==TRUE){
 
 
 if(active_player==1 & x>players){
-
-data <- as.data.frame(read_csv("data.csv",show_col_types = FALSE))  
+old_data <- data
+# data <- as.data.frame(read_csv("data.csv",show_col_types = FALSE))  
 
 training_data<-ai_turn_learn(turn_action, turn_options, player_cards,active_player, x,feedback) 
 training_data <-  as.data.frame(training_data)
+data <-  as.data.frame(training_data)
 
 
-training_data <- cbind(data$state_colour,data$state_number,data$state_wild,data$state_win,data$hand_state,data$turn_action,data$points ,training_data)
+training_data <- cbind(old_data$state_colour,old_data$state_number,old_data$state_wild,old_data$state_win,old_data$hand_state,old_data$turn_action,old_data$points ,training_data)
 
 filename <- paste0(as.numeric(Sys.time()),training_loop,x,"traineddata.csv")
 setwd("archive")
@@ -153,7 +155,8 @@ write.table(
   sep = ",",
   quote = TRUE
 )
-setwd("~/GitHub/Uno")
+# setwd("~/GitHub/Uno")
+setwd("E:/Github/Uno")
 }
 
 
@@ -164,7 +167,9 @@ x<-x+1
 }
 
 # print(training_loop)
+if(training_loop%%10==0){
 print(graph_it())
+  }
 
 training_loop <- training_loop + 1
 }

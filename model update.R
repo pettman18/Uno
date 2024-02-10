@@ -14,7 +14,7 @@ short_term_memory <- read.csv(training_files[v])
 short_term_memory_size <- nrow(short_term_memory)
 
 # find average number of rows per game replace 5 
-short_term_memory_start <- short_term_memory_size - (5 * 50 )
+short_term_memory_start <- short_term_memory_size - (20 * runs )
 
 
 short_term_memory<- tail(short_term_memory,short_term_memory_start )
