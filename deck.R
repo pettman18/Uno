@@ -6,30 +6,41 @@ start <- Sys.time()
 
 training_loop <- 1
 
-while (training_loop < 50){
+while (training_loop < 1000){
 
 source("uno_setup.R")
 
-if(training_loop%%50==0){ 
+if(training_loop%%50==0){
    print("training")
  # source("agent.R")
  # source("model trainer.R")
 source("model update.R")
  }
-  
+
+  #  three players
 players <- 3
 
 player1_cards <-load_player(1,all_player_cards)
 player2_cards <-load_player(2,all_player_cards)
 player3_cards <-load_player(3,all_player_cards)
 
-
-
 player1_cards <- cbind(player=1,player1_cards)
 player2_cards <- cbind(player=2,player2_cards)
 player3_cards <- cbind(player=3,player3_cards)
 
 game_cards <- rbind.data.frame(player1_cards,player2_cards,player3_cards)
+
+
+# players <- 2
+# 
+# player1_cards <-load_player(1,all_player_cards)
+# player2_cards <-load_player(2,all_player_cards)
+# 
+# 
+# player1_cards <- cbind(player=1,player1_cards)
+# player2_cards <- cbind(player=2,player2_cards)
+# 
+# game_cards <- rbind.data.frame(player1_cards,player2_cards)
 
 
 
@@ -131,7 +142,17 @@ training_data <- cbind(data$state_colour,data$state_number,data$state_wild,data$
 
 filename <- paste0(as.numeric(Sys.time()),training_loop,x,"traineddata.csv")
 setwd("archive")
-write.csv(training_data, filename, row.names = FALSE)
+# write.csv(training_data, filename, row.names = FALSE)
+# write.csv(training_data, "traineddata.csv", row.names = FALSE)
+write.table(
+  x = training_data,
+  file = "traineddata.csv",
+  append = TRUE,
+  col.names = !file.exists("traineddata.csv"), # Add column name only if file doesn't exist
+  row.names = FALSE,
+  sep = ",",
+  quote = TRUE
+)
 setwd("~/GitHub/Uno")
 }
 

@@ -18,3 +18,5 @@ winners<- winners %>%
 ggplot(winners,aes(winners$game,winners$count,group= winner,color=winner))+
   geom_line()
 }
+# 
+# tail(winners,10)

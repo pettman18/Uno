@@ -7,6 +7,11 @@ library(tibble)
 library(readr)
 
 
+mround <- function(x,base){
+  base*round(x/base)
+}
+
+
 
 deckmaker <- function(colour){
   initial <- substr(colour,1,1)
@@ -190,10 +195,7 @@ auto_play <- function(options, active_player, model, hand_state="") {
   max_value <- max(model_example, na.rm = TRUE)
   
   choice <-colnames(model_example)[apply(model_example,1,which.max)]
-  # # Find the column index of the maximum value
-  # max_column_index <- which(model_example == max_value, arr.ind = TRUE)[, "col"]
-  # 
-  # choice <- max_column_index
+  
   # print(choice)
     }
   }else{
@@ -228,8 +230,22 @@ player_turn <- function(player_cards, active_card,active_deck,draw_amount,w_colo
   n_g <- min(sum(substr(player_cards$cards,1,1)=="g"),5)
   n_b <- min(sum(substr(player_cards$cards,1,1)=="b"),5)
   n_r <- min(sum(substr(player_cards$cards,1,1)=="r"),5)
-  n_w <- min(sum(substr(player_cards$cards,1,1)=="w"),5)
-  hand_state <- paste(active_colour,n_b,n_g,n_r,n_y, n_w, sep = "")
+  n_w <- min(sum(substr(player_cards$cards,1,1)=="W"),5)
+  
+  point_template <- data.frame(c("b","g","r","y","W"),c(0,0,0,0,0))
+  colnames(point_template) <- c("colour","points")
+  
+  hand_colour_points <- left_join(point_template, find_hand_points(player_cards), by ="colour")
+  hand_colour_points$points.x <- hand_colour_points$points.x +hand_colour_points$points.y
+  hand_colour_points[is.na(hand_colour_points)] <- 0
+  colnames(hand_colour_points) <- c("colour","points","reject")
+  hand_colour_points <- hand_colour_points[,1:2]
+  
+  hand_colour_points$points <- mround(hand_colour_points$points,5)
+  
+  ready_hand_colour<-paste0(hand_colour_points$colour,hand_colour_points$points,sep="", collapse ="")
+    
+  hand_state <- paste(active_colour,n_b,n_g,n_r,n_y, n_w,ready_hand_colour, sep = "")
   
   
   # if the player only has one choice, lets make it.  
@@ -495,6 +511,30 @@ game_players<-0
 
 
 game_players <-load_player(active_player,all_player_cards)
+
+
+find_hand_points <- function(player_cards){
+  
+  card_points <-player_cards
+  
+  card_points$cards <- gsub("R","25",card_points$cards)
+  card_points$cards <- gsub("S","25",card_points$cards)
+  card_points$cards <- gsub("P","25",card_points$cards)
+  
+  card_points$cards <- gsub("W4","50",card_points$cards)
+  card_points$cards <- gsub("w","50",card_points$cards)
+  
+  card_points$colour <-substr(card_points$cards,1,1)
+  card_points$points<-as.numeric(substr(card_points$cards,2,3))
+  
+  
+  card_points_agg <-aggregate(card_points$points, by=list(colour=card_points$colour), FUN=sum)
+  
+  colnames(card_points_agg) <- c( "colour","points")
+  
+  return(card_points_agg)
+  
+}
 
 
 

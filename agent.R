@@ -3,21 +3,24 @@ setwd("~/GitHub/Uno")
 
 setwd("archive")
 
+# setwd("D:/archive")
+
 
 training_files <- list.files(,".csv")
-
-training_files <- list.files(,"longtermdata.csv")
+# 
+# training_files <- list.files(,"longtermdata.csv")
 
 long_term_memory<- read.csv(training_files[1])
-
-v<-2
-while(v < length(training_files)){
-        
-        long_term_memory <- rbind(read.csv(training_files[v]),long_term_memory)
-        
-        
-        v<- v+1
-}
+# 
+# v<-2
+# # while(v < length(training_files)){
+# while(v < 10000){
+#         
+#         long_term_memory <- rbind(read.csv(training_files[v]),long_term_memory)
+#         
+#         
+#         v<- v+1
+# }
 
 print(long_term_memory)
 

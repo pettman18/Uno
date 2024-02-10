@@ -5,26 +5,20 @@ setwd("~/GitHub/Uno")
 
 setwd("archive")
 
-
+v<- 1
 training_files <- list.files(,".csv")
-
-# training_files <- list.files(,"longtermdata.csv")
-short_term_memory_size <- length(training_files)
-
-
-short_term_memory_start <- short_term_memory_size - (5 * training_loop )
-
-
-v<-short_term_memory_start 
 short_term_memory <- read.csv(training_files[v])
 
-while(v < short_term_memory_size){
-  
-  short_term_memory  <- rbind(read.csv(training_files[v]),short_term_memory )
-  
-  
-  v<- v+1
-}
+
+# training_files <- list.files(,"longtermdata.csv")
+short_term_memory_size <- nrow(short_term_memory)
+
+# find average number of rows per game replace 5 
+short_term_memory_start <- short_term_memory_size - (5 * 50 )
+
+
+short_term_memory<- tail(short_term_memory,short_term_memory_start )
+
 
 print(short_term_memory)
 
@@ -52,14 +46,14 @@ save(short_term_memory,file =  "shorttermdata.Rdata")
 
 
 
-control <- list(alpha = 0.5, gamma = 0.15, epsilon = 0.00)
+control <- list(alpha = 0.5, gamma = 0.45, epsilon = 0.05)
 
 model <- ReinforcementLearning(data = short_term_memory, 
                                s = "state", 
                                a = "data.turn_action", 
                                r = "data.points", 
                                s_new = "new_state",
-                               iter = 1, 
+                               iter =2, 
                                control = control,
                                model = model)
 
@@ -67,8 +61,8 @@ summary(model)
 
 
 # model_old <- model
-# new_model <-  model
-str(short_term_memory)
-
-# model<- model_new
-save(model,file =  "model.Rdata")
+# # new_model <-  model
+# str(short_term_memory)
+# 
+# # model<- model_new
+# save(model,file =  "model.Rdata")
